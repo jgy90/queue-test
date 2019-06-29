@@ -49,12 +49,7 @@ public class WordsParserProducer implements Runnable {
     }
 
     private void putWordIntoQueue(Word word) {
-        try {
-            GlobalVariables.wordPartitions.get(word.getPartition()).put(word);
-        } catch (InterruptedException e) {
-            close();
-            throw new CommonException(CommonErrorCode.PUT_WORD_QUEUE_INTERRUPTED, e);
-        }
+        GlobalVariables.wordPartitions.get(word.getPartition()).offer(word);
     }
 
     private void close() {

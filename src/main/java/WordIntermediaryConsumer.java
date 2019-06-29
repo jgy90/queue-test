@@ -1,10 +1,8 @@
 import domain.Word;
-import exceptions.CommonErrorCode;
-import exceptions.CommonException;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 
 public class WordIntermediaryConsumer implements Runnable {
     private int partition;
@@ -19,21 +17,17 @@ public class WordIntermediaryConsumer implements Runnable {
         Word word = new Word();
         while (!isFinished || word != null) {
 
-            try {
-                word = GlobalVariables.wordPartitions.get(partition).poll(SettingVariables.wordPartitionsTimeout, SettingVariables.wordPartitionsTimeoutUnit);
+            word = GlobalVariables.wordPartitions.get(partition).poll();
 
-            } catch (InterruptedException e) {
-                close();
-                throw new CommonException(CommonErrorCode.GET_WORD_QUEUE_INTERRUPTED, e);
+            if (word == null) {
+                try {
+                    Thread.sleep(SettingVariables.wordPartitionsTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
             }
-
-            if (word == null) continue;
-            try {
-                GlobalVariables.savePartitions.get(word.getSavePartition()).put(word);
-            } catch (InterruptedException e) {
-                close();
-                throw new CommonException(CommonErrorCode.PUT_WORD_SAVE_QUEUE_INTERRUPTED, e);
-            }
+            GlobalVariables.savePartitions.get(word.getSavePartition()).offer(word);
 
         }
 
@@ -57,7 +51,7 @@ public class WordIntermediaryConsumer implements Runnable {
     }
 
     private static synchronized void close() {
-        for (BlockingQueue<Word> wordBlockingQueue: GlobalVariables.wordPartitions) {
+        for (Queue<Word> wordBlockingQueue: GlobalVariables.wordPartitions) {
             wordBlockingQueue.clear();
         }
         GlobalVariables.numOfFinishedWordIntermediaryConsumer++;

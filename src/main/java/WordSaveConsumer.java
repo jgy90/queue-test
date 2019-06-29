@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 public class WordSaveConsumer implements Runnable {
@@ -42,12 +43,15 @@ public class WordSaveConsumer implements Runnable {
     public void run() {
         Word word = new Word();
         while (GlobalVariables.numOfFinishedWordIntermediaryConsumer < GlobalVariables.wordPartitions.size() || word != null) {
-            try {
-                word = GlobalVariables.savePartitions.get(partition).poll(SettingVariables.savePartitionsTimeout, SettingVariables.savePartitionsTimeoutUnit);
-            } catch (InterruptedException e) {
-                throw new CommonException(CommonErrorCode.GET_WORD_SAVE_QUEUE_INTERRUPTED, e);
+            word = GlobalVariables.savePartitions.get(partition).poll();
+            if (word == null) {
+                try {
+                    Thread.sleep(SettingVariables.savePartitionsTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
             }
-            if (word == null) continue;
 
             saveWordToFile(word);
         }
@@ -76,7 +80,7 @@ public class WordSaveConsumer implements Runnable {
     }
 
     private static synchronized void queuesClear() {
-        for (BlockingQueue<Word> saveBlockingQueue: GlobalVariables.savePartitions) {
+        for (Queue<Word> saveBlockingQueue: GlobalVariables.savePartitions) {
             saveBlockingQueue.clear();
         }
     }

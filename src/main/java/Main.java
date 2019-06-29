@@ -4,6 +4,7 @@ import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
 import utils.CommonUtils;
+import utils.PerformanceUtil;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
@@ -11,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Main {
 
@@ -19,6 +21,8 @@ public class Main {
     }
 
     private static void run(String[] args) {
+        PerformanceUtil pu = new PerformanceUtil();
+        pu.runningTime("init");
         // arguments 체크
         checkValidArguments(args);
 
@@ -79,6 +83,7 @@ public class Main {
                 throw new CommonException(CommonErrorCode.INTER_CONSUMER_THREAD_INTERRUPTED, e);
             }
         }
+        pu.runningTime("end");
     }
 
     private static void checkValidArguments(String[] args) {
@@ -121,11 +126,11 @@ public class Main {
 
     private static void createPartitions(int numOfWordPartitions) {
         for (int i = 0; i < numOfWordPartitions; i++) {
-            GlobalVariables.wordPartitions.add(new ArrayBlockingQueue<Word>(SettingVariables.wordPartitionsSize));
+            GlobalVariables.wordPartitions.add(new ConcurrentLinkedDeque<Word>());
         }
 
         for (int i = 0; i < CommonConstants.numOfSavePartitions; i++) {
-            GlobalVariables.savePartitions.add(new ArrayBlockingQueue<Word>(SettingVariables.savePartitionsSize));
+            GlobalVariables.savePartitions.add(new ConcurrentLinkedDeque<Word>());
         }
     }
 
