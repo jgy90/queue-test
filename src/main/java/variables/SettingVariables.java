@@ -14,13 +14,13 @@ public class SettingVariables {
     @Deprecated
     public static TimeUnit wordPartitionsTimeoutUnit = TimeUnit.MILLISECONDS;
     @Deprecated
-    public static int wordPartitionsSize = 1000000;
+    public static int wordPartitionsSize = 1000;
 
     public static long savePartitionsTimeout = 50;
     @Deprecated
     public static TimeUnit savePartitionsTimeoutUnit = TimeUnit.MILLISECONDS;
     @Deprecated
-    public static int savePartitionsSize = 1000000;
+    public static int savePartitionsSize = 1000;
 
     public static int numberOfIntermediaryConsumer = 10;
 
