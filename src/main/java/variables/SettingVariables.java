@@ -5,6 +5,11 @@ import constants.CommonConstants;
 import java.util.concurrent.TimeUnit;
 
 public class SettingVariables {
+
+    public static String wordsFilePath;
+    public static String resultFolderPath;
+    public static int numOfWordPartitions;
+
     public static long wordPartitionsTimeout = 50;
     @Deprecated
     public static TimeUnit wordPartitionsTimeoutUnit = TimeUnit.MILLISECONDS;

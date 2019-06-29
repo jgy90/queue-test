@@ -22,7 +22,7 @@ public class WordSaveConsumer implements Runnable {
 
         String saveFilePathName;
         StringBuilder sb = new StringBuilder();
-        sb.append(GlobalVariables.resultFolderPath);
+        sb.append(SettingVariables.resultFolderPath);
         sb.append(File.separator);
         sb.append((char) (partition + 'a'));
         sb.append(CommonConstants.saveFileExtension);
@@ -32,7 +32,7 @@ public class WordSaveConsumer implements Runnable {
         try {
             fileWriter = new FileWriter(saveFilePathName, true);
         } catch (IOException e) {
-            throw new CommonException(CommonErrorCode.SAVE_FILE_OPEN_ERROR);
+            throw new CommonException(CommonErrorCode.SAVE_FILE_OPEN_ERROR, e);
         }
         saveFile = new BufferedWriter(fileWriter, CommonConstants.memPageSize * SettingVariables.outputBufferSizeMultiplier);
     }
@@ -52,7 +52,7 @@ public class WordSaveConsumer implements Runnable {
                 try {
                     Thread.sleep(SettingVariables.savePartitionsTimeout);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    throw new CommonException(CommonErrorCode.SAVE_CONSUMER_THREAD_INTERRUPTED, e);
                 }
                 continue;
             }
@@ -63,12 +63,12 @@ public class WordSaveConsumer implements Runnable {
         try {
             saveFile.flush();
         } catch (IOException e) {
-            throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR);
+            throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR, e);
         }
         try {
             saveFile.close();
         } catch (IOException e) {
-            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR);
+            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
         }
     }
 
@@ -76,7 +76,7 @@ public class WordSaveConsumer implements Runnable {
         try {
             saveFile.write(word.getWord() + System.getProperty("line.separator"));
         } catch (IOException e) {
-            throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR);
+            throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR, e);
         }
     }
 }

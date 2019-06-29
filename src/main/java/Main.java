@@ -1,11 +1,10 @@
 import constants.CommonConstants;
-import constants.OsType;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
-import utils.CommonUtils;
 import utils.PerformanceUtil;
 import variables.GlobalVariables;
+import variables.SettingVariables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class Main {
         checkValidArguments(args);
 
         // partitions 생성
-        createPartitions(GlobalVariables.numOfWordPartitions);
+        createPartitions(SettingVariables.numOfWordPartitions);
 
         // 파일 Parser Producer thread 실행
         WordsParserProducer wordsParserProducer = new WordsParserProducer(args[0]);
@@ -33,7 +32,7 @@ public class Main {
 
         // 단어 중계자 Consumer Thread 실행
         List<Thread> wordIntermediaryConsumerThreadList = new ArrayList<Thread>();
-        for (int i = 0; i < GlobalVariables.numOfWordPartitions; i++) {
+        for (int i = 0; i < SettingVariables.numOfWordPartitions; i++) {
             Thread wordIntermediaryConsumerThread = new Thread(new WordIntermediaryConsumer(i));
             wordIntermediaryConsumerThreadList.add(wordIntermediaryConsumerThread);
         }
@@ -92,20 +91,11 @@ public class Main {
             throw new CommonException(CommonErrorCode.NOT_ENOUGH_ARGUMENTS);
         }
 
-        GlobalVariables.wordsFilePath = args[0];
-        GlobalVariables.resultFolderPath = args[1];
+        SettingVariables.wordsFilePath = args[0];
+        SettingVariables.resultFolderPath = args[1];
 
-        OsType osType = CommonUtils.getOsType();
-
-        // 정상적인 파일 경로인지 체크
-        if (!osType.isValidFilePath(GlobalVariables.wordsFilePath)) {
-            throw new CommonException(CommonErrorCode.INVALID_FILE_PATH);
-        } else if (!osType.isValidFilePath(GlobalVariables.resultFolderPath)) {
-            throw new CommonException(CommonErrorCode.INVALID_FILE_PATH);
-        }
-
-        File wordsFile = new File(GlobalVariables.wordsFilePath);
-        File resultFolder = new File(GlobalVariables.resultFolderPath);
+        File wordsFile = new File(SettingVariables.wordsFilePath);
+        File resultFolder = new File(SettingVariables.resultFolderPath);
 
         // 파일 및 폴더 존재 확인
         if (!wordsFile.exists()) {
@@ -115,9 +105,9 @@ public class Main {
         }
 
         // 파티션 수 확인
-        GlobalVariables.numOfWordPartitions = Integer.parseInt(args[2]);
+        SettingVariables.numOfWordPartitions = Integer.parseInt(args[2]);
 
-        if (GlobalVariables.numOfWordPartitions < CommonConstants.minPartitions || GlobalVariables.numOfWordPartitions > CommonConstants.maxPartitions) {
+        if (SettingVariables.numOfWordPartitions < CommonConstants.minPartitions || SettingVariables.numOfWordPartitions > CommonConstants.maxPartitions) {
             throw new CommonException(CommonErrorCode.INVALID_NUMBER_OF_PARTITIONS);
         }
     }

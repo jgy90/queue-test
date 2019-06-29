@@ -22,6 +22,7 @@ public enum CommonErrorCode implements ErrorCodable {
     SAVE_FILE_FLUSH_ERROR("error occurred while flushing"),
     SAVE_FILE_CLOSE_ERROR("error occurred while closing"),
     SAVE_FILE_WRITE_ERROR("error occurred while writing"),
+
     ;
 
     String errorMessage;

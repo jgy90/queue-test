@@ -1,4 +1,6 @@
 import domain.Word;
+import exceptions.CommonErrorCode;
+import exceptions.CommonException;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
@@ -38,7 +40,7 @@ public class WordIntermediaryConsumer implements Runnable {
                 try {
                     Thread.sleep(SettingVariables.wordPartitionsTimeout);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    throw new CommonException(CommonErrorCode.INTER_CONSUMER_THREAD_INTERRUPTED, e);
                 }
                 continue;
             }

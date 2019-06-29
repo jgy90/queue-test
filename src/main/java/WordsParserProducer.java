@@ -53,7 +53,6 @@ public class WordsParserProducer implements Runnable {
 
     private boolean isValidWord(String word) {
         return CommonConstants.validWordRegex.matcher(String.valueOf(word.charAt(0))).matches();
-//        return CommonConstants.validWordRegex.matcher(word).matches();
     }
 
     private void close() {

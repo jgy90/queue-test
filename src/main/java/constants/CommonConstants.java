@@ -5,9 +5,6 @@ import utils.CommonUtils;
 import java.util.regex.Pattern;
 
 public class CommonConstants {
-    public final static Pattern validFilePathRegexForWindows = Pattern.compile("([a-zA-Z]:)?(\\\\[a-zA-Z0-9_.-]+)+\\\\?");
-    public final static Pattern validFilePathRegexForLinux = Pattern.compile("^/|(/[a-zA-Z0-9_-]+)+$");
-    public final static Pattern validFilePathRegexForMac = Pattern.compile("^/|(/[a-zA-Z0-9_-]+)+$");
     //    public final static Pattern validWordRegex = Pattern.compile("[a-zA-Z][\\S]*");
     public final static Pattern validWordRegex = Pattern.compile("[a-zA-Z]");
 
