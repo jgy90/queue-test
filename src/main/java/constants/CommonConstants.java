@@ -8,7 +8,8 @@ public class CommonConstants {
     public final static Pattern validFilePathRegexForWindows = Pattern.compile("([a-zA-Z]:)?(\\\\[a-zA-Z0-9_.-]+)+\\\\?");
     public final static Pattern validFilePathRegexForLinux = Pattern.compile("^/|(/[a-zA-Z0-9_-]+)+$");
     public final static Pattern validFilePathRegexForMac = Pattern.compile("^/|(/[a-zA-Z0-9_-]+)+$");
-    public final static Pattern validWordRegex = Pattern.compile("[a-zA-Z][\\S]*");
+    //    public final static Pattern validWordRegex = Pattern.compile("[a-zA-Z][\\S]*");
+    public final static Pattern validWordRegex = Pattern.compile("[a-zA-Z]");
 
     public static final int numOfArguments = 3;
     public static final int minPartitions = 2;

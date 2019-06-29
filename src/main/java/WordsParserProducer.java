@@ -2,7 +2,6 @@ import constants.CommonConstants;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
-import utils.CommonUtils;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
@@ -30,7 +29,7 @@ public class WordsParserProducer implements Runnable {
         try {
             word = wordsFile.readLine();
             while (word != null) {
-                if (!CommonUtils.isValidWord(word)) {
+                if (!isValidWord(word)) {
                     word = wordsFile.readLine();
                     continue;
                 }
@@ -50,6 +49,11 @@ public class WordsParserProducer implements Runnable {
 
     private void putWordIntoQueue(Word word) {
         GlobalVariables.wordPartitions.get(word.getPartition()).offer(word);
+    }
+
+    private boolean isValidWord(String word) {
+        return CommonConstants.validWordRegex.matcher(String.valueOf(word.charAt(0))).matches();
+//        return CommonConstants.validWordRegex.matcher(word).matches();
     }
 
     private void close() {

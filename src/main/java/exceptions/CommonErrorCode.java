@@ -1,6 +1,6 @@
 package exceptions;
 
-public enum CommonErrorCode implements ErrorCodable{
+public enum CommonErrorCode implements ErrorCodable {
     TOO_MANY_ARGUMENTS("too many arguments have been entered"),
     NOT_ENOUGH_ARGUMENTS("arguments are not enough"),
     UNKNOWN_OS_TYPE("OS type is unknown"),
@@ -17,6 +17,11 @@ public enum CommonErrorCode implements ErrorCodable{
     GET_WORD_SAVE_QUEUE_INTERRUPTED("save queue was interrupted while getting"),
     INTER_CONSUMER_THREAD_INTERRUPTED("intermediary consumer thread is interrupted while running"),
     SAVE_CONSUMER_THREAD_INTERRUPTED("save consumer thread is interrupted while running"),
+
+    SAVE_FILE_OPEN_ERROR("error occurred while opening"),
+    SAVE_FILE_FLUSH_ERROR("error occurred while flushing"),
+    SAVE_FILE_CLOSE_ERROR("error occurred while closing"),
+    SAVE_FILE_WRITE_ERROR("error occurred while writing"),
     ;
 
     String errorMessage;

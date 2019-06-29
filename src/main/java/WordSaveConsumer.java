@@ -2,15 +2,14 @@ import constants.CommonConstants;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
-import variables.SettingVariables;
 import variables.GlobalVariables;
+import variables.SettingVariables;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 
 public class WordSaveConsumer implements Runnable {
     private int partition;
@@ -33,10 +32,15 @@ public class WordSaveConsumer implements Runnable {
         try {
             fileWriter = new FileWriter(saveFilePathName, true);
         } catch (IOException e) {
-            // TODO
-            e.printStackTrace();
+            throw new CommonException(CommonErrorCode.SAVE_FILE_OPEN_ERROR);
         }
         saveFile = new BufferedWriter(fileWriter, CommonConstants.memPageSize * SettingVariables.outputBufferSizeMultiplier);
+    }
+
+    private static synchronized void queuesClear() {
+        for (Queue<Word> saveBlockingQueue : GlobalVariables.savePartitions) {
+            saveBlockingQueue.clear();
+        }
     }
 
     @Override
@@ -59,14 +63,12 @@ public class WordSaveConsumer implements Runnable {
         try {
             saveFile.flush();
         } catch (IOException e) {
-            // TODO
-            e.printStackTrace();
+            throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR);
         }
         try {
             saveFile.close();
         } catch (IOException e) {
-            // TODO
-            e.printStackTrace();
+            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR);
         }
     }
 
@@ -74,14 +76,7 @@ public class WordSaveConsumer implements Runnable {
         try {
             saveFile.write(word.getWord() + System.getProperty("line.separator"));
         } catch (IOException e) {
-            // TODO
-            e.printStackTrace();
-        }
-    }
-
-    private static synchronized void queuesClear() {
-        for (Queue<Word> saveBlockingQueue: GlobalVariables.savePartitions) {
-            saveBlockingQueue.clear();
+            throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR);
         }
     }
 }

@@ -1,5 +1,7 @@
 package variables;
 
+import constants.CommonConstants;
+
 import java.util.concurrent.TimeUnit;
 
 public class SettingVariables {
@@ -19,5 +21,15 @@ public class SettingVariables {
 
     public static int inputBufferSizeMultiplier = 10;
     public static int outputBufferSizeMultiplier = 10;
+
+
+    @Deprecated
+    public static int outputBufferLowerLimitPercent = 50;
+    @Deprecated
+    public static int outputBufferLowerLimit = CommonConstants.memPageSize * outputBufferSizeMultiplier * (outputBufferLowerLimitPercent / 100);
+    @Deprecated
+    public static int outputBufferUpperLimit = CommonConstants.memPageSize * outputBufferSizeMultiplier;
+
+    public static int flushIOCount = 2;
 
 }

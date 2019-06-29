@@ -5,7 +5,7 @@ public class PerformanceUtil {
     private long stdTime;
 
     public void runningTime(String s) {
-        if (stdTime == 0 ) {
+        if (stdTime == 0) {
             stdTime = System.currentTimeMillis();
             return;
         }

@@ -5,11 +5,26 @@ import variables.SettingVariables;
 import java.util.Queue;
 
 public class WordIntermediaryConsumer implements Runnable {
-    private int partition;
     private static boolean isFinished = false;
+    private int partition;
 
     public WordIntermediaryConsumer(int partition) {
         this.partition = partition;
+    }
+
+    public static boolean isFinished() {
+        return isFinished;
+    }
+
+    public static void setFinished(boolean finished) {
+        isFinished = finished;
+    }
+
+    private static synchronized void close() {
+        for (Queue<Word> wordBlockingQueue : GlobalVariables.wordPartitions) {
+            wordBlockingQueue.clear();
+        }
+        GlobalVariables.numOfFinishedWordIntermediaryConsumer++;
     }
 
     @Override
@@ -40,20 +55,5 @@ public class WordIntermediaryConsumer implements Runnable {
 
     public void setPartition(int partition) {
         this.partition = partition;
-    }
-
-    public static boolean isFinished() {
-        return isFinished;
-    }
-
-    public static void setFinished(boolean finished) {
-        isFinished = finished;
-    }
-
-    private static synchronized void close() {
-        for (Queue<Word> wordBlockingQueue: GlobalVariables.wordPartitions) {
-            wordBlockingQueue.clear();
-        }
-        GlobalVariables.numOfFinishedWordIntermediaryConsumer++;
     }
 }

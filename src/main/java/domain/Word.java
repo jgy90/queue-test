@@ -13,7 +13,7 @@ public class Word {
     }
 
     public Word() {
-        
+
     }
 
     public String getWord() {
@@ -41,6 +41,6 @@ public class Word {
     }
 
     public int getSavePartition() {
-        return alphabet-'a';
+        return alphabet - 'a';
     }
 }

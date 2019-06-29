@@ -6,12 +6,10 @@ import exceptions.CommonException;
 import utils.CommonUtils;
 import utils.PerformanceUtil;
 import variables.GlobalVariables;
-import variables.SettingVariables;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Main {
