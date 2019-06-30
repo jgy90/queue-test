@@ -90,8 +90,13 @@ public class SettingVariables {
 
     /**
      * partition 분배 방식
-     * HASH, ALPHABET, RR (RoundRobin)
+     * HASH, ALPHABET, FNV1A
      */
-    public static String distributionType = "RR";
+    public static String distributionType = "FNV1A";
 
+    /**
+     * FNV1a Hash 대상 최대 String 개수
+     * 0 은 전체
+     */
+    public static int fnv1aMaxLength = 0;
 }

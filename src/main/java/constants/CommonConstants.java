@@ -17,4 +17,7 @@ public class CommonConstants {
     public static final String lineSeparator = System.getProperty("line.separator");
 
     public static final int numOfSavePartitions = 26;
+
+    public static final int FNV1_32_INIT = 0x811c9dc5;
+    public static final int FNV1_PRIME_32 = 16777619;
 }

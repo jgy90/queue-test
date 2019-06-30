@@ -1,5 +1,6 @@
 package constants;
 
+import utils.CommonUtils;
 import variables.SettingVariables;
 
 public enum DistributionType implements PartitionDistribute {
@@ -15,12 +16,23 @@ public enum DistributionType implements PartitionDistribute {
             return (word.charAt(0) - 'a') % SettingVariables.numOfWordPartitions;
         }
     },
+    @Deprecated
     RR {
         @Override
         public int getPartition(String word) {
             return DistributionType.getIncCounter();
         }
     },
+    FNV1A {
+        @Override
+        public int getPartition(String word) {
+            if (SettingVariables.fnv1aMaxLength == 0) {
+                return (CommonUtils.fnv1aHash32(word, word.length()) & 0xfffffff) % SettingVariables.numOfWordPartitions;
+            } else {
+                return (CommonUtils.fnv1aHash32(word, word.length() < SettingVariables.fnv1aMaxLength ? word.length() : SettingVariables.fnv1aMaxLength) & 0xfffffff) % SettingVariables.numOfWordPartitions;
+            }
+        }
+    }
     ;
 
     private static int counter = 0;
