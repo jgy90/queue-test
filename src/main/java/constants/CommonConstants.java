@@ -14,5 +14,7 @@ public class CommonConstants {
     public static final int memPageSize = CommonUtils.getOsType().equals(OsType.WINDOWS) ? 8192 : 4096;
     public static final String saveFileExtension = ".txt";
 
+    public static final String lineSeparator = System.getProperty("line.separator");
+
     public static final int numOfSavePartitions = 26;
 }

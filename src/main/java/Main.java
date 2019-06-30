@@ -32,7 +32,7 @@ public class Main {
 
         // 단어 중계자 Consumer Thread 실행
         List<Thread> wordIntermediaryConsumerThreadList = new ArrayList<Thread>();
-        for (int i = 0; i < SettingVariables.numOfWordPartitions; i++) {
+        for (int i = 0; i < SettingVariables.numberOfIntermediaryConsumer; i++) {
             Thread wordIntermediaryConsumerThread = new Thread(new WordIntermediaryConsumer(i));
             wordIntermediaryConsumerThreadList.add(wordIntermediaryConsumerThread);
         }

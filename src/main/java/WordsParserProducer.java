@@ -34,7 +34,7 @@ public class WordsParserProducer implements Runnable {
                     continue;
                 }
                 // 분리된 단어를 공통 Queue 에 저장
-                putWordIntoQueue(new Word(word, GlobalVariables.wordPartitions.size()));
+                putWordIntoQueue(new Word(word, SettingVariables.numOfWordPartitions));
 
                 word = wordsFile.readLine();
             }

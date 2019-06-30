@@ -1,5 +1,7 @@
 package domain;
 
+import constants.DistributionType;
+
 public class Word {
     private String word;
     private int partition;
@@ -8,7 +10,8 @@ public class Word {
     public Word(String word, int numOfPartitions) {
         this.word = word;
         String wordLowerCase = word.toLowerCase();
-        this.partition = (wordLowerCase.hashCode() & 0xfffffff) % numOfPartitions;
+        DistributionType distributionType = DistributionType.getDistributionType();
+        this.partition = distributionType.getPartition(wordLowerCase);
         alphabet = wordLowerCase.charAt(0);
     }
 

@@ -16,6 +16,7 @@ public class WordSaveConsumer implements Runnable {
 
     private BufferedWriter saveFile;
     private FileWriter fileWriter;
+    private StringBuilder memstore = new StringBuilder();
 
     public WordSaveConsumer(int partition) {
         this.partition = partition;
@@ -46,7 +47,7 @@ public class WordSaveConsumer implements Runnable {
     @Override
     public void run() {
         Word word = new Word();
-        while (GlobalVariables.numOfFinishedWordIntermediaryConsumer < GlobalVariables.wordPartitions.size() || word != null) {
+        while (GlobalVariables.numOfFinishedWordIntermediaryConsumer < SettingVariables.numberOfIntermediaryConsumer || word != null) {
             word = GlobalVariables.savePartitions.get(partition).poll();
             if (word == null) {
                 try {
@@ -73,10 +74,48 @@ public class WordSaveConsumer implements Runnable {
     }
 
     private void saveWordToFile(Word word) {
+        memstore.append(word.getWord());
+        memstore.append(CommonConstants.lineSeparator);
+        if (memstore.length() > SettingVariables.outputBufferUpperLimit) {
+            forceFlushSaveFile();
+        } else if (memstore.length() > SettingVariables.outputBufferLowerLimit) {
+            flushSaveFile();
+        }
+    }
+
+    private void forceFlushSaveFile() {
         try {
-            saveFile.write(word.getWord() + System.getProperty("line.separator"));
+            saveFile.write(memstore.toString());
+            clearMemstore();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR, e);
         }
+    }
+
+    private void flushSaveFile() {
+        boolean lockAcquire = GlobalVariables.saveFileFlushLock.tryAcquire();
+        if (!lockAcquire) return;
+
+        try {
+            saveFile.write(memstore.toString());
+            clearMemstore();
+        } catch (IOException e) {
+            GlobalVariables.saveFileFlushLock.release();
+            throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR, e);
+        }
+
+        try {
+            saveFile.flush();
+        } catch (IOException e) {
+            GlobalVariables.saveFileFlushLock.release();
+            throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR, e);
+        }
+
+        GlobalVariables.saveFileFlushLock.release();
+
+    }
+
+    private void clearMemstore() {
+        memstore.delete(0, memstore.length());
     }
 }

@@ -4,14 +4,16 @@ import exceptions.CommonException;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 public class WordIntermediaryConsumer implements Runnable {
     private static boolean isFinished = false;
-    private int partition;
+    private List<Integer> partitions;
 
-    public WordIntermediaryConsumer(int partition) {
-        this.partition = partition;
+    public WordIntermediaryConsumer(int std) {
+        partitions = getPartitions(std);
     }
 
     public static boolean isFinished() {
@@ -29,33 +31,40 @@ public class WordIntermediaryConsumer implements Runnable {
         GlobalVariables.numOfFinishedWordIntermediaryConsumer++;
     }
 
+    private List<Integer> getPartitions(int std) {
+        List<Integer> partitions = new ArrayList<>();
+
+        for (int i = 0; i * SettingVariables.numberOfIntermediaryConsumer + std < SettingVariables.numOfWordPartitions; i++) {
+            partitions.add(i * SettingVariables.numberOfIntermediaryConsumer + std);
+        }
+
+        return partitions;
+    }
+
     @Override
     public void run() {
-        Word word = new Word();
-        while (!isFinished || word != null) {
+        Word word;
+        boolean isContinue = true;
+        while (!isFinished || isContinue) {
 
-            word = GlobalVariables.wordPartitions.get(partition).poll();
+            isContinue = false;
+            for (Integer partition : partitions) {
+                word = GlobalVariables.wordPartitions.get(partition).poll();
 
-            if (word == null) {
-                try {
-                    Thread.sleep(SettingVariables.wordPartitionsTimeout);
-                } catch (InterruptedException e) {
-                    throw new CommonException(CommonErrorCode.INTER_CONSUMER_THREAD_INTERRUPTED, e);
+                if (word == null) {
+                    try {
+                        Thread.sleep(SettingVariables.wordPartitionsTimeout);
+                    } catch (InterruptedException e) {
+                        throw new CommonException(CommonErrorCode.INTER_CONSUMER_THREAD_INTERRUPTED, e);
+                    }
+                    continue;
                 }
-                continue;
+                isContinue = true;
+                GlobalVariables.savePartitions.get(word.getSavePartition()).offer(word);
             }
-            GlobalVariables.savePartitions.get(word.getSavePartition()).offer(word);
-
         }
 
         close();
     }
 
-    public int getPartition() {
-        return partition;
-    }
-
-    public void setPartition(int partition) {
-        this.partition = partition;
-    }
 }
