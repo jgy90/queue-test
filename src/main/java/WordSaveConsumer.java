@@ -1,4 +1,5 @@
 import constants.CommonConstants;
+import constants.ResourceCleaner;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
@@ -10,7 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class WordSaveConsumer implements Runnable {
+public class WordSaveConsumer implements Runnable, ResourceCleaner {
     private int partition;
 
     private BufferedWriter saveFile;
@@ -37,8 +38,8 @@ public class WordSaveConsumer implements Runnable {
         saveFile = new BufferedWriter(fileWriter, CommonConstants.memPageSize * SettingVariables.outputBufferSizeMultiplier);
     }
 
-
-    private void close() {
+    @Override
+    public void close() {
         try {
             saveFile.flush();
         } catch (IOException e) {

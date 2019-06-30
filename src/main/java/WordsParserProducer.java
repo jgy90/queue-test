@@ -1,4 +1,5 @@
 import constants.CommonConstants;
+import constants.ResourceCleaner;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
@@ -10,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class WordsParserProducer implements Runnable {
+public class WordsParserProducer implements Runnable, ResourceCleaner {
     private BufferedReader wordsFile;
     private FileReader fileReader;
 
@@ -55,7 +56,8 @@ public class WordsParserProducer implements Runnable {
         return CommonConstants.validWordRegex.matcher(String.valueOf(word.charAt(0))).matches();
     }
 
-    private void close() {
+    @Override
+    public void close() {
         WordIntermediaryConsumer.setFinished(true);
     }
 }
