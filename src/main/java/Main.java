@@ -9,6 +9,7 @@ import variables.SettingVariables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Main {
@@ -80,7 +81,23 @@ public class Main {
                 throw new CommonException(CommonErrorCode.INTER_CONSUMER_THREAD_INTERRUPTED, e);
             }
         }
-        pu.runningTime("end");
+        close();
+        pu.runningTime("Done!\nElapsed Time(ms)");
+    }
+
+    private static void close() {
+        if (GlobalVariables.wordPartitions != null) {
+            for (Queue<Word> wordQueue : GlobalVariables.wordPartitions) {
+                wordQueue.clear();
+            }
+            GlobalVariables.wordPartitions = null;
+        }
+        if (GlobalVariables.savePartitions != null) {
+            for (Queue<Word> saveQueue : GlobalVariables.savePartitions) {
+                saveQueue.clear();
+            }
+            GlobalVariables.savePartitions = null;
+        }
     }
 
     private static void checkValidArguments(String[] args) {

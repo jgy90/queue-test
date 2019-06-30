@@ -6,7 +6,6 @@ import variables.SettingVariables;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 public class WordIntermediaryConsumer implements Runnable {
     private static boolean isFinished = false;
@@ -25,9 +24,6 @@ public class WordIntermediaryConsumer implements Runnable {
     }
 
     private static synchronized void close() {
-        for (Queue<Word> wordBlockingQueue : GlobalVariables.wordPartitions) {
-            wordBlockingQueue.clear();
-        }
         GlobalVariables.numOfFinishedWordIntermediaryConsumer++;
     }
 

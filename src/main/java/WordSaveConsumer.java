@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Queue;
 
 public class WordSaveConsumer implements Runnable {
     private int partition;
@@ -38,10 +37,27 @@ public class WordSaveConsumer implements Runnable {
         saveFile = new BufferedWriter(fileWriter, CommonConstants.memPageSize * SettingVariables.outputBufferSizeMultiplier);
     }
 
-    private static synchronized void queuesClear() {
-        for (Queue<Word> saveBlockingQueue : GlobalVariables.savePartitions) {
-            saveBlockingQueue.clear();
+
+    private void close() {
+        try {
+            saveFile.flush();
+        } catch (IOException e) {
+            throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR, e);
         }
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
+        }
+
+        try {
+            saveFile.close();
+        } catch (IOException e) {
+            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
+        }
+
+        memstore = null;
+
     }
 
     @Override
@@ -60,17 +76,7 @@ public class WordSaveConsumer implements Runnable {
 
             saveWordToFile(word);
         }
-        queuesClear();
-        try {
-            saveFile.flush();
-        } catch (IOException e) {
-            throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR, e);
-        }
-        try {
-            saveFile.close();
-        } catch (IOException e) {
-            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
-        }
+        close();
     }
 
     private void saveWordToFile(Word word) {
