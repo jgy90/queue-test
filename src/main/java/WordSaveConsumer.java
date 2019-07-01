@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class WordSaveConsumer implements Runnable, ResourceCleaner {
+public class WordSaveConsumer extends InterruptedException implements Runnable, ResourceCleaner {
     private int partition;
 
     private BufferedWriter saveFile;
@@ -19,6 +19,7 @@ public class WordSaveConsumer implements Runnable, ResourceCleaner {
     private StringBuilder memstore = new StringBuilder();
 
     public WordSaveConsumer(int partition) {
+        super("WordSaveConsumer is interrupted");
         this.partition = partition;
 
         String saveFilePathName;
@@ -76,6 +77,9 @@ public class WordSaveConsumer implements Runnable, ResourceCleaner {
             }
 
             saveWordToFile(word);
+            if (Thread.interrupted()) {
+                break;
+            }
         }
         close();
     }

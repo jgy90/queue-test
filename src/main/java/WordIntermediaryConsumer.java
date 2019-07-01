@@ -7,11 +7,12 @@ import variables.SettingVariables;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordIntermediaryConsumer implements Runnable {
+public class WordIntermediaryConsumer extends InterruptedException implements Runnable {
     private static boolean isFinished = false;
     private List<Integer> partitions;
 
     public WordIntermediaryConsumer(int std) {
+        super("WordIntermediaryConsumer is interrupted");
         partitions = getPartitions(std);
     }
 
@@ -57,10 +58,12 @@ public class WordIntermediaryConsumer implements Runnable {
                 }
                 isContinue = true;
                 GlobalVariables.savePartitions.get(word.getSavePartition()).offer(word);
+                if (Thread.interrupted()) {
+                    break;
+                }
             }
         }
 
         close();
     }
-
 }

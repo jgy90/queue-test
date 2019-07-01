@@ -11,11 +11,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class WordsParserProducer implements Runnable, ResourceCleaner {
+public class WordsParserProducer extends InterruptedException implements Runnable, ResourceCleaner {
     private BufferedReader wordsFile;
     private FileReader fileReader;
 
     public WordsParserProducer(String wordsFilePath) {
+        super("WordsParserProducer is interrupted");
         try {
             fileReader = new FileReader(wordsFilePath);
             wordsFile = new BufferedReader(fileReader, CommonConstants.memPageSize * SettingVariables.inputBufferSizeMultiplier);
@@ -38,6 +39,10 @@ public class WordsParserProducer implements Runnable, ResourceCleaner {
                 putWordIntoQueue(new Word(word, SettingVariables.numOfWordPartitions));
 
                 word = wordsFile.readLine();
+                if (Thread.interrupted()) {
+                    break;
+                }
+
             }
             wordsFile.close();
             fileReader.close();

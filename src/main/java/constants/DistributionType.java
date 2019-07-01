@@ -32,8 +32,7 @@ public enum DistributionType implements PartitionDistribute {
                 return (CommonUtils.fnv1aHash32(word, word.length() < SettingVariables.fnv1aMaxLength ? word.length() : SettingVariables.fnv1aMaxLength) & 0xfffffff) % SettingVariables.numOfWordPartitions;
             }
         }
-    }
-    ;
+    };
 
     private static int counter = 0;
 
