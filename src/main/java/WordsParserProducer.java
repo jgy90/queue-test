@@ -4,6 +4,7 @@ import exceptions.CommonErrorCode;
 import exceptions.CommonException;
 import interfaces.Readable;
 import interfaces.ResourceClean;
+import interfaces.Sendable;
 import interfaces.ValidationCheck;
 import variables.GlobalVariables;
 import variables.SettingVariables;
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class WordsParserProducer extends InterruptedException implements Runnable, ValidationCheck, ResourceClean {
 
     private Readable wordReader;
+    private Sendable queueSender;
 
     public WordsParserProducer(String wordsFilePath) {
         super("WordsParserProducer is interrupted");
@@ -23,6 +25,7 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
             close();
             throw new CommonException(CommonErrorCode.WORDS_FILE_NOT_EXISTS, e);
         }
+        queueSender = new QueueSender();
     }
 
     @Override
@@ -36,7 +39,8 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
                     continue;
                 }
                 // 분리된 단어를 공통 Queue 에 저장
-                putWordIntoQueue(new Word(word, SettingVariables.numOfWordPartitions));
+                Word wordObj = new Word(word, SettingVariables.numOfWordPartitions);
+                queueSender.send(wordObj, GlobalVariables.wordPartitions.get(wordObj.getPartition()));
 
                 word = wordReader.read();
                 if (Thread.interrupted()) {
@@ -49,10 +53,6 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
         } finally {
             close();
         }
-    }
-
-    private void putWordIntoQueue(Word word) {
-        GlobalVariables.wordPartitions.get(word.getPartition()).offer(word);
     }
 
     @Override

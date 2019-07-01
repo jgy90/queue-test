@@ -1,6 +1,7 @@
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
+import interfaces.Receivable;
 import interfaces.Writable;
 import variables.GlobalVariables;
 import variables.SettingVariables;
@@ -11,18 +12,20 @@ public class WordSaveConsumer extends InterruptedException implements Runnable {
     private int partition;
 
     private Writable wordWriter;
+    private Receivable queueReceiver;
 
     public WordSaveConsumer(int partition) {
         super("WordSaveConsumer is interrupted");
         this.partition = partition;
         wordWriter = new WordWriter(partition);
+        queueReceiver = new QueueReceiver();
     }
 
     @Override
     public void run() {
         Word word = new Word();
         while (GlobalVariables.numOfFinishedWordIntermediaryConsumer < SettingVariables.numberOfIntermediaryConsumer || word != null) {
-            word = GlobalVariables.savePartitions.get(partition).poll();
+            word = (Word) queueReceiver.receive(GlobalVariables.savePartitions.get(partition));
             if (word == null) {
                 try {
                     Thread.sleep(SettingVariables.savePartitionsTimeout);

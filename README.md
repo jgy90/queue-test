@@ -11,8 +11,8 @@
 + 부가 기능들에 대해 확장성이 있는가
   + 공통 기능이나 종류에 따른 기능들은 최대한 단순하게 추가 가능하도록 설계
 + class와 interface를 어떻게 나눌것인가
-  + 일관된 기능을 수
-  + 공통 기능에 대해서는 종류마다 interface 생성
+  + 공통 기능에 대해서는 종류마다 class생성 
+  + 추상적인 기능동작에 대해서는 interface 생성 후 class에서 implements
 
 ### 성능
 + Producer가 Partition에 분배 시 최대한 고르게 분배할 것

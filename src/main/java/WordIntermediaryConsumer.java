@@ -1,7 +1,9 @@
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
+import interfaces.Receivable;
 import interfaces.ResourceClean;
+import interfaces.Sendable;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
@@ -12,10 +14,14 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
     private static boolean isFinished = false;
     private static Object clearLock = new Object();
     private List<Integer> partitions;
+    private Sendable queueSender;
+    private Receivable queueReceiver;
 
     public WordIntermediaryConsumer(int std) {
         super("WordIntermediaryConsumer is interrupted");
         partitions = getPartitions(std);
+        queueSender = new QueueSender();
+        queueReceiver = new QueueReceiver();
     }
 
     public static boolean isFinished() {
@@ -51,7 +57,7 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
 
             isContinue = false;
             for (Integer partition : partitions) {
-                word = GlobalVariables.wordPartitions.get(partition).poll();
+                word = (Word) queueReceiver.receive(GlobalVariables.wordPartitions.get(partition));
 
                 if (word == null) {
                     try {
@@ -62,7 +68,7 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
                     continue;
                 }
                 isContinue = true;
-                GlobalVariables.savePartitions.get(word.getSavePartition()).offer(word);
+                queueSender.send(word, GlobalVariables.savePartitions.get(word.getSavePartition()));
                 if (Thread.interrupted()) {
                     break;
                 }
