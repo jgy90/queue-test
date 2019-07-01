@@ -2,17 +2,18 @@ import constants.CommonConstants;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
-import interfaces.ResourceCleaner;
-import interfaces.ValidationChecker;
+import interfaces.Readable;
+import interfaces.ResourceClean;
+import interfaces.ValidationCheck;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class WordsParserProducer extends InterruptedException implements Runnable, ResourceCleaner, ValidationChecker {
+public class WordsParserProducer extends InterruptedException implements Runnable, ValidationCheck, ResourceClean {
 
-    private WordReader wordReader;
+    private Readable wordReader;
 
     public WordsParserProducer(String wordsFilePath) {
         super("WordsParserProducer is interrupted");
@@ -28,16 +29,16 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
     public void run() {
         String word;
         try {
-            word = wordReader.readWord();
+            word = wordReader.read();
             while (word != null) {
                 if (!isValid(word)) {
-                    word = wordReader.readWord();
+                    word = wordReader.read();
                     continue;
                 }
                 // 분리된 단어를 공통 Queue 에 저장
                 putWordIntoQueue(new Word(word, SettingVariables.numOfWordPartitions));
 
-                word = wordReader.readWord();
+                word = wordReader.read();
                 if (Thread.interrupted()) {
                     break;
                 }

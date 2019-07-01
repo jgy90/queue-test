@@ -1,5 +1,6 @@
 import constants.CommonConstants;
-import interfaces.ResourceCleaner;
+import interfaces.Readable;
+import interfaces.ResourceClean;
 import variables.SettingVariables;
 
 import java.io.BufferedReader;
@@ -7,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class WordReader implements ResourceCleaner {
+public class WordReader implements Readable {
     private BufferedReader wordsFile;
     private FileReader fileReader;
 
@@ -20,13 +21,14 @@ public class WordReader implements ResourceCleaner {
         wordsFile = new BufferedReader(fileReader, CommonConstants.memPageSize * SettingVariables.inputBufferSizeMultiplier);
     }
 
-    public String readWord() throws IOException {
-        return wordsFile.readLine();
-    }
-
     @Override
     public void close() throws IOException{
         wordsFile.close();
         fileReader.close();
+    }
+
+    @Override
+    public String read() throws IOException {
+        return wordsFile.readLine();
     }
 }

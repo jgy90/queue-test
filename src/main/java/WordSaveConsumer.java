@@ -1,13 +1,16 @@
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
+import interfaces.Writable;
 import variables.GlobalVariables;
 import variables.SettingVariables;
+
+import java.io.IOException;
 
 public class WordSaveConsumer extends InterruptedException implements Runnable {
     private int partition;
 
-    private WordWriter wordWriter;
+    private Writable wordWriter;
 
     public WordSaveConsumer(int partition) {
         super("WordSaveConsumer is interrupted");
@@ -29,12 +32,16 @@ public class WordSaveConsumer extends InterruptedException implements Runnable {
                 continue;
             }
 
-            wordWriter.saveWordToFile(word);
+            wordWriter.write(word.getWord());
             if (Thread.interrupted()) {
                 break;
             }
         }
-        wordWriter.close();
+        try {
+            wordWriter.close();
+        } catch (IOException e) {
+            throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
+        }
     }
 
 }

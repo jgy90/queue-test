@@ -1,5 +1,5 @@
 package interfaces;
 
-public interface ValidationChecker {
+public interface ValidationCheck {
     boolean isValid(String word);
 }

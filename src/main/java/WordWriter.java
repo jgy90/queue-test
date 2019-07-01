@@ -1,8 +1,7 @@
 import constants.CommonConstants;
-import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
-import interfaces.ResourceCleaner;
+import interfaces.Writable;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
@@ -11,7 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class WordWriter implements ResourceCleaner {
+public class WordWriter implements Writable {
 
     private StringBuilder memstore = new StringBuilder();
 
@@ -40,8 +39,9 @@ public class WordWriter implements ResourceCleaner {
         saveFile = new BufferedWriter(fileWriter, CommonConstants.memPageSize * SettingVariables.outputBufferSizeMultiplier);
     }
 
-    public void saveWordToFile(Word word) {
-        memstore.append(word.getWord());
+    @Override
+    public void write(String word) {
+        memstore.append(word);
         memstore.append(CommonConstants.lineSeparator);
         if (memstore.length() > SettingVariables.outputBufferUpperLimit) {
             forceFlushSaveFile();
@@ -88,7 +88,6 @@ public class WordWriter implements ResourceCleaner {
 
     @Override
     public void close() {
-
         try {
             saveFile.flush();
         } catch (IOException e) {

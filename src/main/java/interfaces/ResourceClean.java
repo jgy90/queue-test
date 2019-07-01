@@ -2,6 +2,6 @@ package interfaces;
 
 import java.io.IOException;
 
-public interface ResourceCleaner {
+public interface ResourceClean {
     void close() throws IOException;
 }

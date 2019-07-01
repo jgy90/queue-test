@@ -1,5 +1,5 @@
 import constants.CommonConstants;
-import interfaces.ResourceCleaner;
+import interfaces.ResourceClean;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
@@ -12,7 +12,7 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class WordSeparatorStarter implements ResourceCleaner {
+public class WordSeparatorStarter implements ResourceClean {
 
     public void run(String[] args) {
         PerformanceUtil pu = new PerformanceUtil();

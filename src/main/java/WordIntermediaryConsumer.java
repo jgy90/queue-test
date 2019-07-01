@@ -1,14 +1,14 @@
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
-import interfaces.ResourceCleaner;
+import interfaces.ResourceClean;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordIntermediaryConsumer extends InterruptedException implements Runnable, ResourceCleaner {
+public class WordIntermediaryConsumer extends InterruptedException implements Runnable, ResourceClean {
     private static boolean isFinished = false;
     private static Object clearLock = new Object();
     private List<Integer> partitions;
