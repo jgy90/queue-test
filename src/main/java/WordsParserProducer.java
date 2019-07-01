@@ -1,51 +1,48 @@
 import constants.CommonConstants;
-import constants.ResourceCleaner;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
+import interfaces.ResourceCleaner;
+import interfaces.ValidationChecker;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
-public class WordsParserProducer extends InterruptedException implements Runnable, ResourceCleaner {
-    private BufferedReader wordsFile;
-    private FileReader fileReader;
+public class WordsParserProducer extends InterruptedException implements Runnable, ResourceCleaner, ValidationChecker {
+
+    private WordReader wordReader;
 
     public WordsParserProducer(String wordsFilePath) {
         super("WordsParserProducer is interrupted");
         try {
-            fileReader = new FileReader(wordsFilePath);
-            wordsFile = new BufferedReader(fileReader, CommonConstants.memPageSize * SettingVariables.inputBufferSizeMultiplier);
+            wordReader = new WordReader(wordsFilePath);
         } catch (FileNotFoundException e) {
             close();
             throw new CommonException(CommonErrorCode.WORDS_FILE_NOT_EXISTS, e);
         }
     }
 
+    @Override
     public void run() {
         String word;
         try {
-            word = wordsFile.readLine();
+            word = wordReader.readWord();
             while (word != null) {
-                if (!isValidWord(word)) {
-                    word = wordsFile.readLine();
+                if (!isValid(word)) {
+                    word = wordReader.readWord();
                     continue;
                 }
                 // 분리된 단어를 공통 Queue 에 저장
                 putWordIntoQueue(new Word(word, SettingVariables.numOfWordPartitions));
 
-                word = wordsFile.readLine();
+                word = wordReader.readWord();
                 if (Thread.interrupted()) {
                     break;
                 }
-
             }
-            wordsFile.close();
-            fileReader.close();
+            wordReader.close();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.WORDS_FILE_IO_ERROR, e);
         } finally {
@@ -57,7 +54,8 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
         GlobalVariables.wordPartitions.get(word.getPartition()).offer(word);
     }
 
-    private boolean isValidWord(String word) {
+    @Override
+    public boolean isValid(String word) {
         return CommonConstants.validWordRegex.matcher(String.valueOf(word.charAt(0))).matches();
     }
 

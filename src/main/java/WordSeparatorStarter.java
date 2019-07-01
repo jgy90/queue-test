@@ -1,5 +1,5 @@
 import constants.CommonConstants;
-import constants.ResourceCleaner;
+import interfaces.ResourceCleaner;
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;

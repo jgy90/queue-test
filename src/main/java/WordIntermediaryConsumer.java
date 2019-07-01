@@ -1,14 +1,16 @@
 import domain.Word;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
+import interfaces.ResourceCleaner;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordIntermediaryConsumer extends InterruptedException implements Runnable {
+public class WordIntermediaryConsumer extends InterruptedException implements Runnable, ResourceCleaner {
     private static boolean isFinished = false;
+    private static Object clearLock = new Object();
     private List<Integer> partitions;
 
     public WordIntermediaryConsumer(int std) {
@@ -24,8 +26,11 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
         isFinished = finished;
     }
 
-    private static synchronized void close() {
-        GlobalVariables.numOfFinishedWordIntermediaryConsumer++;
+    @Override
+    public void close() {
+        synchronized (clearLock) {
+            GlobalVariables.numOfFinishedWordIntermediaryConsumer++;
+        }
     }
 
     private List<Integer> getPartitions(int std) {

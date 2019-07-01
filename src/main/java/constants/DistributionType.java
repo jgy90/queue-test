@@ -1,5 +1,6 @@
 package constants;
 
+import interfaces.PartitionDistribute;
 import utils.CommonUtils;
 import variables.SettingVariables;
 
