@@ -24,6 +24,69 @@
 + 사용 Server 혹은 PC 사용에 따라 성능 조절이 가능하도록 필요
 
 ## Class 설계
+### Class Diagram
+![class_diagram](https://user-images.githubusercontent.com/52350273/60509898-ffe4e180-9d08-11e9-95d0-f800f6d4261d.png)
+
+### Class 설명
+`WordSeparatorStarter`
++ 시작용 class  
++ 입력값을 확인하고 Partition  생성 후 Producer와 Consumer들을 실행
+
+`WordsParserProducer`
++ 단어 분배용 Producer
++ 파일에서 단어를 읽어 유효성 검사 후 설정된 방식에 따라 Partition에 분배
++ `QueueSender`와 `WordReader`를 사용
++ `ResourceClean`을 implements
+
+`WordIntermediaryConsumer`
++ 중계 Consumer
++ 정해진 Partition에서 단어를 알파벳에 맞는 파일 출력을 위한 Queue로 전달
++ `QueueSender`와 `QueueReceiver`를 사용
++ `ResourceClean`을 implements
+
+`WordSaveConsumer`
++ 출력 Consumer
++ Queue에서 단어를 받아 파일로 출력
++ `QueueReceiver`와 `WordWriter`를 사용
++ `ResourceClean`을 implements
+
+`QueueSender`
++ 단어 전송기
++ Queue로 단어를 전송
++ `Sendable`을 implements
+
+`QueueReceiver`
++ 단어 수신시
++ Queue에서 단어를 수신
++ `Receivable`을 implements
+
+`WordReader`
++ 단어 입력기
++ 파일로부터 단어를 입력
++ `Readable`을 implements
+
+`WordWriter`
++ 단어 출력기
++ 파일로 단어를 출력
++ `Writable`을 implements
+
+### Interface 설명
+`Sendable`: 
++ 전송용 인터페이스
+
+`Receivable`: 
++ 수신용 인터페이스
+
+`Readable`: 
++ 읽기용 인터페이스
++ `ResourceClean`을 implements
+
+`Writable`
++ 쓰기용 인터페이스
++ `ResourceClean`을 implements
+
+`ResourceClean`:
++ 리소스 정리용 인터페이스 
 
 
 ## 사용방법
