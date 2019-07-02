@@ -9,6 +9,7 @@ import variables.SettingVariables;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 public class WordIntermediaryConsumer extends InterruptedException implements Runnable, ResourceClean {
     private static boolean isFinished = false;
@@ -52,10 +53,8 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
     @Override
     public void run() {
         Word word;
-        boolean isContinue = true;
-        while (!isFinished || isContinue) {
+        while (!isFinished || isContinue()) {
 
-            isContinue = false;
             for (Integer partition : partitions) {
                 word = (Word) queueReceiver.receive(GlobalVariables.wordPartitions.get(partition));
 
@@ -67,7 +66,6 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
                     }
                     continue;
                 }
-                isContinue = true;
                 queueSender.send(word, GlobalVariables.savePartitions.get(word.getSavePartition()));
                 if (Thread.interrupted()) {
                     break;
@@ -76,5 +74,14 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
         }
 
         close();
+    }
+
+    private boolean isContinue() {
+        for (Queue<Word> partition: GlobalVariables.wordPartitions) {
+            if (partition.size() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

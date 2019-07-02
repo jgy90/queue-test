@@ -1,6 +1,5 @@
 import constants.CommonConstants;
 import interfaces.Readable;
-import interfaces.ResourceClean;
 import variables.SettingVariables;
 
 import java.io.BufferedReader;

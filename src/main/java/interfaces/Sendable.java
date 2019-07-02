@@ -1,5 +1,5 @@
 package interfaces;
 
-public interface Sendable {
-    void send(Object object, Object to);
+public interface Sendable<O, T> {
+    void send(O object, T to);
 }

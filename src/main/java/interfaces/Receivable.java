@@ -1,5 +1,5 @@
 package interfaces;
 
-public interface Receivable {
-    Object receive(Object from);
+public interface Receivable<T, O> {
+    O receive(T from);
 }
