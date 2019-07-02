@@ -10,18 +10,20 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class WordWriter implements Writable {
+public class WordWriter implements Writable<String> {
 
     private StringBuilder memstore = new StringBuilder();
 
     private BufferedWriter saveFile;
     private FileWriter fileWriter;
+    private int partition;
 
     public WordWriter(int partition) {
         initialize(partition);
     }
 
     private void initialize(int partition) {
+        this.partition = partition;
         String saveFilePathName;
         StringBuilder sb = new StringBuilder();
         sb.append(SettingVariables.resultFolderPath);
@@ -43,6 +45,7 @@ public class WordWriter implements Writable {
     public void write(String word) {
         memstore.append(word);
         memstore.append(CommonConstants.lineSeparator);
+
         if (memstore.length() > SettingVariables.outputBufferUpperLimit) {
             forceFlushSaveFile();
         } else if (memstore.length() > SettingVariables.outputBufferLowerLimit) {
@@ -89,18 +92,20 @@ public class WordWriter implements Writable {
     @Override
     public void close() {
         try {
+            saveFile.write(memstore.toString());
             saveFile.flush();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR, e);
         }
+
         try {
-            fileWriter.close();
+            saveFile.close();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
         }
 
         try {
-            saveFile.close();
+            fileWriter.close();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
         }

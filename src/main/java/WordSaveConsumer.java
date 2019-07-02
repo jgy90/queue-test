@@ -23,8 +23,8 @@ public class WordSaveConsumer extends InterruptedException implements Runnable {
 
     @Override
     public void run() {
-        Word word = new Word();
-        while (GlobalVariables.numOfFinishedWordIntermediaryConsumer < SettingVariables.numberOfIntermediaryConsumer || word != null) {
+        Word word;
+        while (GlobalVariables.numOfFinishedWordIntermediaryConsumer < SettingVariables.numberOfIntermediaryConsumer || isContinue()) {
             word = (Word) queueReceiver.receive(GlobalVariables.savePartitions.get(partition));
             if (word == null) {
                 try {
@@ -45,6 +45,10 @@ public class WordSaveConsumer extends InterruptedException implements Runnable {
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
         }
+    }
+
+    private boolean isContinue() {
+        return GlobalVariables.savePartitions.get(partition).size() > 0;
     }
 
 }

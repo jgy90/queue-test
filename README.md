@@ -5,14 +5,17 @@
 ### 설계
 + 주요 기능에 대한 작업 flow가 어떻게 되는가
   + 입력 -> partition별 분배 -> 알파벳별 분배 -> 출력
++ 주요 기능에 대해 행위가 무엇이 있는가
+  + Queue 송수신, 파일 입출력, 리소스 정리, partition 선정, 입력값 유효성 검사  
 + 각각의 기능에 따라 몇 종류의 Consumer가 필요한가
-  + 알파벳의 경우 26개로 26의 파일 출력이 필요하지만 Core 수의 한계로 동시에 다 쓸수가 없음
-  + 출력 이외의 기능에 대해서는 추가의 Consumer를 이용
-+ 부가 기능들에 대해 확장성이 있는가
-  + 공통 기능이나 종류에 따른 기능들은 최대한 단순하게 추가 가능하도록 설계
+  + 알파벳의 경우 26개로 26의 파일 출력이 필요
+  + 26개의 consumer로 할 경우 놀게되는 partition이 많아짐 (consumer는 정해진 partition만 참조)
+  + HASH 기준으로 partition에 분배할 경우 이를 알파벳으로 분류해줄 것이 필요
 + class와 interface를 어떻게 나눌것인가
   + 공통 기능에 대해서는 종류마다 class생성 
-  + 추상적인 기능동작에 대해서는 interface 생성 후 class에서 implements
+  + 추상적인 기능동작에 대해서는 interface 생성 후 class에서 implements  
++ 확장성을 위해 generic 사용 필요
+  + 공통 행위를 정의할 interface에서는 parameter를 
 
 ### 성능
 + Producer가 Partition에 분배 시 최대한 고르게 분배할 것

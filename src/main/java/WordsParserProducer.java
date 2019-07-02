@@ -12,7 +12,7 @@ import variables.SettingVariables;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class WordsParserProducer extends InterruptedException implements Runnable, ValidationCheck, ResourceClean {
+public class WordsParserProducer extends InterruptedException implements Runnable, ValidationCheck<String>, ResourceClean {
 
     private Readable wordReader;
     private Sendable queueSender;
@@ -32,17 +32,17 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
     public void run() {
         String word;
         try {
-            word = wordReader.read();
+            word = readFromFile();
             while (word != null) {
                 if (!isValid(word)) {
-                    word = wordReader.read();
+                    word = readFromFile();
                     continue;
                 }
                 // 분리된 단어를 공통 Queue 에 저장
                 Word wordObj = new Word(word, SettingVariables.numOfWordPartitions);
                 queueSender.send(wordObj, GlobalVariables.wordPartitions.get(wordObj.getPartition()));
 
-                word = wordReader.read();
+                word = readFromFile();
                 if (Thread.interrupted()) {
                     break;
                 }
@@ -54,6 +54,11 @@ public class WordsParserProducer extends InterruptedException implements Runnabl
             close();
         }
     }
+
+    private String readFromFile() throws IOException {
+        return (String) wordReader.read();
+    }
+
 
     @Override
     public boolean isValid(String word) {

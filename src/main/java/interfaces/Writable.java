@@ -1,7 +1,5 @@
 package interfaces;
 
-import java.io.IOException;
-
-public interface Writable extends ResourceClean{
-    void write(String string);
+public interface Writable<T> extends ResourceClean{
+    void write(T object);
 }

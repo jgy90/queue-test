@@ -1,5 +1,5 @@
 package interfaces;
 
-public interface ValidationCheck {
-    boolean isValid(String word);
+public interface ValidationCheck<T> {
+    boolean isValid(T object);
 }
