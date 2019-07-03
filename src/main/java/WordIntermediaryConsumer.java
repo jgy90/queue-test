@@ -53,6 +53,12 @@ public class WordIntermediaryConsumer extends InterruptedException implements Ru
     @Override
     public void run() {
         Word word;
+
+        if (partitions.size() == 0) {
+            close();
+            return;
+        }
+
         while (!isFinished || isContinue()) {
 
             for (Integer partition : partitions) {
