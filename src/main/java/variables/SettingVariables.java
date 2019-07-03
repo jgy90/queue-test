@@ -71,7 +71,7 @@ public class SettingVariables {
     /**
      * soft flush 기준 %
      */
-    public static int outputBufferLowerLimitPercent = 50;
+    public static int outputBufferLowerLimitPercent = 100;
 
     /**
      * soft flush 기준 byte

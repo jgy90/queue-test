@@ -2,19 +2,17 @@ import constants.CommonConstants;
 import exceptions.CommonErrorCode;
 import exceptions.CommonException;
 import interfaces.Writable;
+import utils.BufferedWriterUD;
 import variables.GlobalVariables;
 import variables.SettingVariables;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class WordWriter implements Writable<String> {
 
-    private StringBuilder memstore = new StringBuilder();
-
-    private BufferedWriter saveFile;
+    private BufferedWriterUD saveFile;
     private FileWriter fileWriter;
     private int partition;
 
@@ -38,41 +36,28 @@ public class WordWriter implements Writable<String> {
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_OPEN_ERROR, e);
         }
-        saveFile = new BufferedWriter(fileWriter, CommonConstants.memPageSize * SettingVariables.outputBufferSizeMultiplier);
+        saveFile = new BufferedWriterUD(fileWriter, SettingVariables.outputBufferUpperLimit);
     }
 
     @Override
     public void write(String word) {
-        memstore.append(word);
-        memstore.append(CommonConstants.lineSeparator);
 
-        if (memstore.length() > SettingVariables.outputBufferUpperLimit) {
-            forceFlushSaveFile();
-        } else if (memstore.length() > SettingVariables.outputBufferLowerLimit) {
-            flushSaveFile();
-        }
-    }
-
-    private void forceFlushSaveFile() {
+        int size;
         try {
-            saveFile.write(memstore.toString());
-            clearMemstore();
+            saveFile.write(word + CommonConstants.lineSeparator);
+            size = saveFile.size();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR, e);
+        }
+
+        if (size > SettingVariables.outputBufferLowerLimit) {
+            flushSaveFile();
         }
     }
 
     private void flushSaveFile() {
         boolean lockAcquire = GlobalVariables.saveFileFlushLock.tryAcquire();
         if (!lockAcquire) return;
-
-        try {
-            saveFile.write(memstore.toString());
-            clearMemstore();
-        } catch (IOException e) {
-            GlobalVariables.saveFileFlushLock.release();
-            throw new CommonException(CommonErrorCode.SAVE_FILE_WRITE_ERROR, e);
-        }
 
         try {
             saveFile.flush();
@@ -85,14 +70,9 @@ public class WordWriter implements Writable<String> {
 
     }
 
-    private void clearMemstore() {
-        memstore.delete(0, memstore.length());
-    }
-
     @Override
     public void close() {
         try {
-            saveFile.write(memstore.toString());
             saveFile.flush();
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_FLUSH_ERROR, e);
@@ -109,8 +89,5 @@ public class WordWriter implements Writable<String> {
         } catch (IOException e) {
             throw new CommonException(CommonErrorCode.SAVE_FILE_CLOSE_ERROR, e);
         }
-
-        memstore = null;
-
     }
 }
