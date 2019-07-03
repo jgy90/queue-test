@@ -104,6 +104,37 @@ public class WordSeparatorStarter implements ResourceClean {
         if (SettingVariables.numOfWordPartitions < CommonConstants.minPartitions || SettingVariables.numOfWordPartitions > CommonConstants.maxPartitions) {
             throw new CommonException(CommonErrorCode.INVALID_NUMBER_OF_PARTITIONS);
         }
+
+        if (SettingVariables.wordPartitionsTimeout < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "wordPartitionsTimeout", SettingVariables.wordPartitionsTimeout);
+        }
+        if (SettingVariables.wordPartitionsSize < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "wordPartitionsSize", SettingVariables.wordPartitionsSize);
+        }
+        if (SettingVariables.savePartitionsTimeout < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "savePartitionsTimeout", SettingVariables.savePartitionsTimeout);
+        }
+        if (SettingVariables.savePartitionsSize < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "savePartitionsSize", SettingVariables.savePartitionsSize);
+        }
+        if (SettingVariables.numberOfIntermediaryConsumer < 1 || SettingVariables.numberOfIntermediaryConsumer > 100) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "numberOfIntermediaryConsumer", SettingVariables.numberOfIntermediaryConsumer);
+        }
+        if (SettingVariables.outputBufferLowerLimitPercent < 0 || SettingVariables.outputBufferLowerLimitPercent > 100) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "outputBufferLowerLimitPercent", SettingVariables.outputBufferLowerLimitPercent);
+        }
+        if (SettingVariables.flushIOCount < 0 || SettingVariables.flushIOCount > 100) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "flushIOCount", SettingVariables.flushIOCount);
+        }
+        if (SettingVariables.fnv1aMaxLength < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "fnv1aMaxLength", SettingVariables.fnv1aMaxLength);
+        }
+        if (SettingVariables.inputBufferSizeMultiplier < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "inputBufferSizeMultiplier", SettingVariables.inputBufferSizeMultiplier);
+        }
+        if (SettingVariables.outputBufferSizeMultiplier < 0) {
+            throw new CommonException(CommonErrorCode.INVALID_SETTING_VARIABLE, "outputBufferSizeMultiplier", SettingVariables.outputBufferSizeMultiplier);
+        }
     }
 
     private void createPartitions(int numOfWordPartitions) {

@@ -23,6 +23,8 @@ public enum CommonErrorCode implements ErrorCodable {
     SAVE_FILE_CLOSE_ERROR("error occurred while closing"),
     SAVE_FILE_WRITE_ERROR("error occurred while writing"),
 
+    INVALID_SETTING_VARIABLE("invalid setting variable"),
+
     ;
 
     String errorMessage;
